@@ -1,1 +1,13 @@
-#placeholder for the Ansible sample
+- hosts: localhost
+  connection: local
+  tasks:
+   - vca_vapp:
+       operation: poweron
+       state: present
+       instance_id: 'd90612e9-ee23-44f4-b49c-112202b608fc'
+       vdc_name: 'mreferre'
+       catalog_name: "Public Catalog"
+       template_name: "CentOS63-32BIT"
+       vm_name: "{{ item }}"
+       network_name: default-routed-network
+     with_sequence: start=0 end=10 format=ansibletemp%02x
