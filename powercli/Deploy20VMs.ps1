@@ -12,7 +12,6 @@ $number = Read-Host 'Enter how many templates you want to deploy'
 
   Start-Job -ScriptBlock {  
                             $WarningPreference = "SilentlyContinue"
-                            #import-module vmware.vimautomation.core
                             import-module vmware.vimautomation.cloud
                             import-module vmware.vimautomation.pcloud
                             $mycreds = New-Object System.Management.Automation.PSCredential ($args[2], $args[3])
@@ -35,6 +34,5 @@ $number = Read-Host 'Enter how many templates you want to deploy'
                             $NewVAppNetwork = New-CIVAppNetwork -VApp $Name -Direct -ParentOrgNetwork $myOrgNetworkConsistent
                             Get-CIVApp -Name $Name | Get-CIVM | Get-CINetworkAdapter | Set-CINetworkAdapter -IPAddressAllocationMode Pool -VAppNetwork $NewVAppNetwork -Connected:$true                            
                             Start-CIVApp -VApp $NewvApp
-                            #End single VApp deployment atomic unit
                          } -ArgumentList $region, $myOrgVdc, $userid, $password
 }
