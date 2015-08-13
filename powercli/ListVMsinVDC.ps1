@@ -12,4 +12,4 @@ Connect-PIServer -OnDemand -Credential $mycreds -WarningAction 0 -ErrorAction 0
 $regionstar = $region + "*"
 Write-Host $regionstar                      
 Get-PIComputeInstance -Region $regionstar | Connect-PIComputeInstance -WarningAction 0 -ErrorAction 0
-Get-CIVM -OrgVdc $myOrgVdc | Select Name, Status, GuestOSFullName, CpuCount, MemoryGB 
+Get-CIVM | Format-Table 
