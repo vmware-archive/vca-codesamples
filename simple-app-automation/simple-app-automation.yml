@@ -1,3 +1,10 @@
+# This module requires the following variable settings at the shell level:
+# export ANSIBLE_HOST_KEY_CHECKING=False
+# export VCA_USER='vca login user name' 
+# export VCA_PASS='vca login user password'
+# This module also requires the following role: https://github.com/jdauphant/ansible-role-nginx
+
+
 - hosts: localhost
   connection: local
   vars:
@@ -25,7 +32,7 @@
        instance_id: "{{ instanceid }}"
        vdc_name: 'mreferre'
        state: present
-       nat_rules:
+       nat_rules: 
          - rule_type: DNAT
            original_ip: "{{ public_ip }}"
            translated_ip: "{{ myvm.vm_details.network_info.ip }}"
@@ -37,21 +44,27 @@
          - description: "Allow all trafic to the public ip"
            source_ip: "Any"
            dest_ip: "{{ public_ip }}"
-
+ 
 
 #   - wait_for: host="{{ public_ip }}" state=started delay=5
-
-   - add_host: name="{{ public_ip }}" groups=nginx ansible_ssh_password="{{ admin_pass }}"
-
-
+ 
+   - add_host: name="{{ public_ip }}" groups=nginx ansible_ssh_pass="{{ admin_pass }}"
+   
 - hosts: nginx
+  pre_tasks:
+   - command: sudo sed -i "s/mirrorlist=https/mirrorlist=http/" /etc/yum.repos.d/epel.repo 
+   - name: install epel-release 
+     yum: name="epel-release" state=latest
   roles: 
-    - role: nginx
-      nginx_http_params:
-        - sendfile "on"
-        - access_log "/var/log/nginx/access.log"
-      nginx_sites:
-        default:
-          - listen 80
-          - location / { try_files $uri $uri/ /index.html; }
-          - location /images/ { try_files $uri $uri/ /index.html; }
+   - role: nginx
+     nginx_http_params:
+       - sendfile "on"
+       - access_log "/var/log/nginx/access.log"
+     nginx_sites:
+       default:
+         - listen 80
+         - location / { try_files $uri $uri/ /index.html; }
+         - location /images/ { try_files $uri $uri/ /index.html; }
+  post_tasks:
+   - name: Pull application from the repository.
+     git: repo=https://github.com/Dissimulate/Tearable-Cloth.git dest=./usr/share/nginx/html/ version=1
