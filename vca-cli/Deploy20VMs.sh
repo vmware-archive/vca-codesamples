@@ -49,6 +49,7 @@ vca vapp create -a $VAPP_NAME -V $VM_NAME -c 'Public Catalog' -t CentOS64-64BIT 
 # Optional:
 # Get and save the IP for each new VM created for later use
 # export variables in the form   myVappName_1_IP=192.168.0.1
+# Uses the jq parser utlity - https://stedolan.github.io/jq/ 
 
 VMS=$(vca -j vm)
 for (( c=1; c<=${COUNT}; c++ ))
