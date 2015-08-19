@@ -62,8 +62,7 @@ do
 done
 
 # Optional:
-# Power on the VMs
-
+# Power on the VApps / VMs
 for (( c=1; c<=${COUNT}; c++ ))
 do
   vca vapp power-on --vapp ${VAPP_NAME}-${c}
