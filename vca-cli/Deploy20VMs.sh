@@ -40,9 +40,9 @@ vca login ${VCA_USER}   --password  ${VCA_PASS}   --instance 97453e02-e83c-4cae-
 # VMs will be placed on the default-routed-network with IPs allocated from the Gateway static pool
 # Login passwords for root will be auto generated and visible in the vCloud Air Portal
 # Refer to the xyz example to see how to customize a VM with a set password or ssh key for root.
-VAPP_NAME = 'myVappName'
-VM_NAME = 'myVmName'
-COUNT = 2
+export VAPP_NAME='myVappName'
+export VM_NAME='myVmName'
+export COUNT=2
 vca vapp create -a $VAPP_NAME -V $VM_NAME -c 'Public Catalog' -t CentOS64-64BIT -n default-routed-network -m pool --count $COUNT    
 
 
@@ -51,16 +51,23 @@ vca vapp create -a $VAPP_NAME -V $VM_NAME -c 'Public Catalog' -t CentOS64-64BIT 
 # export variables in the form   myVappName_1_IP=192.168.0.1
 # Uses the jq parser utlity - https://stedolan.github.io/jq/ 
 
-VMS=$(vca -j vm)
+export VMS=$(vca -j vm)
 for (( c=1; c<=${COUNT}; c++ ))
 do
  export VA_NAME=${VAPP_NAME}-${c}
  VA_IP=`echo $VMS | jq --raw-output --arg va_name "$VA_NAME" '.vms[] | select(.vApp==$va_name).IPs'` 
  #Remove any - characters, not valid in export variable name
  VA_NAME="${VA_NAME//-/_}"
- export ${VA_NAME}_IP=$VA_IP;  echo $VA_NAME $VA_IP
+ export ${VA_NAME}_IP=$VA_IP;  echo "Located " $VA_NAME $VA_IP
 done
 
+# Optional:
+# Power on the VMs
+
+for (( c=1; c<=${COUNT}; c++ ))
+do
+  vca vapp power-on --vapp ${VAPP_NAME}-${c}
+done
 
 # end session
 
