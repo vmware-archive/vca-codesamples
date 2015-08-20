@@ -4,25 +4,36 @@
 # export VCA_PASS='vca login user password'
 # This module also requires the following role: https://github.com/jdauphant/ansible-role-nginx
 
+# Note that some of the setup/configuration is specific to the OS templates being used in this example
+# (CentOS 6.4 64bit as provided in the VMware catalog)
+# If you attempt to use other templates you may need to tweak the playbook accordingly 
 
+ 
 - hosts: localhost
   connection: local
   vars:
     instanceid: 'd90612e9-ee23-44f4-b49c-112202b608fc'
     admin_pass: 'Vmware123!'
     public_ip: "144.130.51.227"
+    vdc: "mreferre"
+    template: "CentOS64-64BIT"
+    catalog: "Public Catalog"
+    network: "default-routed-network"
+    vmname: "VMdemo"
+    networkmode: "pool"
+
   tasks:
    - vca_vapp:
        state: present
        operation: poweron
        instance_id: "{{ instanceid }}"
-       vdc_name: 'mreferre'
-       catalog_name: "Public Catalog"
-       template_name: "CentOS64-64BIT"
-       vm_name: VMdemo
-       network_mode: pool
+       vdc_name: "{{ vdc }}"
+       catalog_name: "{{ catalog }}"
+       template_name: "{{ template }}"
+       vm_name: "{{ vmname }}"
+       network_mode: "{{ networkmode }}"
        admin_password: '{{ admin_pass }}'
-       network_name: "default-routed-network"
+       network_name: "{{ network }}"
 
      register: myvm
 
@@ -46,15 +57,25 @@
            dest_ip: "{{ public_ip }}"
  
 
-#   - wait_for: host="{{ public_ip }}" state=started delay=5
+   - wait_for: host="{{ public_ip }}" port=22 state=started delay=5
  
    - add_host: name="{{ public_ip }}" groups=nginx ansible_ssh_pass="{{ admin_pass }}"
    
 - hosts: nginx
   pre_tasks:
-   - command: sudo sed -i "s/mirrorlist=https/mirrorlist=http/" /etc/yum.repos.d/epel.repo 
    - name: install epel-release 
-     yum: name="epel-release" state=latest
+     yum: name="{{ item }}" state=latest
+     with_items:
+      - epel-release
+   - shell: sed -i "s/mirrorlist=https/mirrorlist=http/" /etc/yum.repos.d/epel.repo 
+
+   - shell: service iptables stop
+
+   - name: install  selinux
+     yum: name="{{ item }}" state=latest
+     with_items:
+      - libselinux-python
+      - git
   roles: 
    - role: nginx
      nginx_http_params:
@@ -66,5 +87,6 @@
          - location / { try_files $uri $uri/ /index.html; }
          - location /images/ { try_files $uri $uri/ /index.html; }
   post_tasks:
+   - shell: rm -rf /usr/share/nginx/html/*
    - name: Pull application from the repository.
-     git: repo=https://github.com/Dissimulate/Tearable-Cloth.git dest=./usr/share/nginx/html/ version=1
+     git: repo=https://github.com/Dissimulate/Tearable-Cloth.git dest=/usr/share/nginx/html
