@@ -1,0 +1,24 @@
+vcloud: 
+    service_type: vca            # vca or vchs
+    host: vca.vmware.com         
+    version: '5.7'
+    org: ''
+    vdc_name: 'VDC1'
+    instance: 97453e02-e83c-4cae-bbe9-3f7ee6dd8401
+    catalog_name: 'Public Catalog'
+    template_name: CentOS64-64BIT
+    vapp_name: VM-CentOS-VApp
+    vm_name: VM-CentOS
+    public_ip: 107.189.113.86
+    network_name: default-routed-network
+    network_mode: pool
+    vm_memory: 1024
+    vm_cpus: 1
+
+
+pyvcloud:
+    logfile: pyvcloud.log
+
+    # Set as one of  'CRITICAL', 'ERROR', 'WARNING', 'INFO', DEBUG'
+    loglevel: 'DEBUG'
+
