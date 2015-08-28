@@ -15,7 +15,7 @@ $number = Read-Host 'Enter how many templates you want to deploy'
                             import-module vmware.vimautomation.cloud
                             import-module vmware.vimautomation.pcloud
                             $mycreds = New-Object System.Management.Automation.PSCredential ($args[2], $args[3])
-                            Connect-PIServer -OnDemand -Credential $mycreds -WarningAction 0 -ErrorAction 0
+                            Connect-PIServer -vCA -Credential $mycreds -WarningAction 0 -ErrorAction 0
                             $regionstar = $args[0] + "*"
                             Write-Host $regionstar                      
                             Get-PIComputeInstance -Region $regionstar | Connect-PIComputeInstance -WarningAction 0 -ErrorAction 0
