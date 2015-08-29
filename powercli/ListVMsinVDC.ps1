@@ -8,7 +8,7 @@ $myOrgVdc = Read-Host 'Enter the OrgVdc you want a list of VMs of'
 $WarningPreference = "SilentlyContinue"
 #import-module vmware.vimautomation.core
 $mycreds = New-Object System.Management.Automation.PSCredential ($userid, $password)
-Connect-PIServer -OnDemand -Credential $mycreds -WarningAction 0 -ErrorAction 0
+Connect-PIServer -vCA -Credential $mycreds -WarningAction 0 -ErrorAction 0
 $regionstar = $region + "*"
 Write-Host $regionstar                      
 Get-PIComputeInstance -Region $regionstar | Connect-PIComputeInstance -WarningAction 0 -ErrorAction 0
