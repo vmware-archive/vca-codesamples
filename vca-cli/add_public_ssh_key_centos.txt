@@ -1,0 +1,14 @@
+#!/bin/bash 
+
+if [ x$1=x"postcustomization" ]; 
+  then 
+    mkdir -p /root/.ssh
+
+    echo 'ssh-rsa --KEY-HERE-- ' >> /root/.ssh/authorized_keys
+ 
+    chmod go-rwx /root/.ssh
+    chmod go-rwx /root/.ssh/authorized_keys
+    restorecon -Rv /root/.ssh
+
+    echo 'DNS1=8.8.8.8' >> /etc/sysconfig/network-scripts/ifcfg-eth1 
+fi
