@@ -1,0 +1,4 @@
+testerHost ansible_ssh_host=107.189.120.124 ansible_ssh_user=root
+
+[test]
+testerHost
