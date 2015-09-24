@@ -10,4 +10,4 @@
        template_name: "CentOS63-32BIT"
        vm_name: "{{ item }}"
        network_name: default-routed-network
-     with_sequence: start=0 end=10 format=ansibletemp%02x
+     with_sequence: start=0 end=20 format=ansibletemp%02x

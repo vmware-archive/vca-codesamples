@@ -18,6 +18,7 @@ inputvappname = "webserver"
 numberofvms = 20
 username = "your-user@your-org"
 password = "your-password" 
+guestpassword = "guestOS-password"
 host = "your-FQDN-vCD-endpoint"
 #apipath = "/api/compute/api" #uncomment this line if you are using the VCA platform
 #apipath = "/api" #uncomment this line if you are using the VCHS platform or vCD standalone
@@ -115,8 +116,8 @@ while i < numberofvms do
   vcloud.put_vm(vm_id, vappname, {})
   ap vm
 
-  # wait_for doesn't seem to be working so we just sleep 10 secs 
-  # vm.wait_for(30) { ready? }
+  # wait_for doesn't seem to be working so we just sleep 20 secs 
+  # vm.wait_for { ready? }
   sleep(20)
 
   # connect the VM to the vApp Network we created during the vApp instantiation
@@ -126,6 +127,14 @@ while i < numberofvms do
   vmnetwork.is_connected = true
   vmnetwork.ip_address_allocation_mode = "POOL"
   vmnetwork.save
+
+  vmcustomization = vm.customization
+  vmcustomization.admin_password =  guestpassword 
+  vmcustomization.admin_password_auto = false
+  vmcustomization.reset_password_required = false 
+  vmcustomization.computer_name = vappname
+  vmcustomization.enabled = true
+  vmcustomization.save
 
   vapp.power_on
   i += 1
